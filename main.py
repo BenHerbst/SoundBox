@@ -2,12 +2,14 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GLib, GdkPixbuf
 import os, sys
 import vlc
 import time
 import _thread
 import stagger
+import io
+from PIL import Image
 
 DRAG_ACTION = Gdk.DragAction.COPY
 
@@ -35,6 +37,8 @@ class GUI:
         self.button.set_valign(Gtk.Align.CENTER)
         self.button.set_halign(Gtk.Align.CENTER)
 
+        self.image = Gtk.Image()
+
         self.p = None
 
         self.overlay.show_all()
@@ -45,15 +49,33 @@ class GUI:
             if player.p.get_position() > 0.99:
                 player.p.set_position(0.0)
 
+
+    def image2pixbuf(fr, im):
+        """Convert Pillow image to GdkPixbuf"""
+        data = im.tobytes()
+        w, h = im.size
+        data = GLib.Bytes.new(data)
+        pix = GdkPixbuf.Pixbuf.new_from_bytes(data, GdkPixbuf.Colorspace.RGB,
+            False, 8, w, h, w * 3)
+        return pix
+
     def on_drag_data_received(self, widget, drag_context, x,y, data,info, time):
         self.paused = False
         location = data.get_text().replace("%20", " ").replace("%C3%B6", "ö").strip()
         mp3 = stagger.read_tag(location.replace("file://", ""))
+        by_data = mp3[stagger.id3.APIC][0].data
+        image = io.BytesIO(by_data)
+        image_file = Image.open(image)
+        pixbuf = self.image2pixbuf(image_file)
+        self.image.set_from_pixbuf(pixbuf)
+
+
         self.window.set_title("SoundBox - " + mp3.title + " by " + mp3.artist)
         if self.p is None:
             self.p = vlc.MediaPlayer(location)
             self.overlay.remove(self.label)
-            self.overlay.add(self.button)
+            self.overlay.add_overlay(self.image)
+            self.overlay.add_overlay(self.button)
             self.overlay.show_all()
         else:
             media = vlc.Media(location)
