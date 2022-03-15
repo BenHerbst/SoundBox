@@ -7,3 +7,9 @@ Installation:
 4. Run the main.py script. Thats all, you can also create a starter for it with 'python3 /home/user/path_to_app/main.py' in it as run arguments an then use any icon you like from the internet or so that fits it.
 
 It works by just dragging sound file in it. Then you can pause / resume it and skip forward or backwards via arrow keys ( Not yeat finished )
+
+TODO:
+- Mediakeys support
+- Skip forwards and backwards via arrow keys
+- Space to pause / resume when not button selected
+- Cover image
