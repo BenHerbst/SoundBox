@@ -22,6 +22,7 @@ class GUI:
         self.window.set_title("SoundBox")
         self.window.set_resizable(False)
         self.window.set_decorated(False)
+        self.window.connect("button-press-event", self.button_press)
 
         self.overlay = Gtk.Overlay()
         self.overlay.drag_dest_set(Gtk.DestDefaults.ALL, [], DRAG_ACTION)
@@ -30,7 +31,6 @@ class GUI:
         self.overlay.connect("drag-data-received", self.on_drag_data_received)
         self.window.add(self.overlay)
 
-        self.window.connect("button-press-event", self.button_press)
 
         self.label = Gtk.Label(label="Please drop your audio file here.")
         self.overlay.add(self.label)
