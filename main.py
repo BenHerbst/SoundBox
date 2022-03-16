@@ -21,6 +21,7 @@ class GUI:
         self.window.connect("destroy", Gtk.main_quit)
         self.window.set_title("SoundBox")
         self.window.set_resizable(False)
+        self.window.set_decorated(False)
 
         self.overlay = Gtk.Overlay()
         self.overlay.drag_dest_set(Gtk.DestDefaults.ALL, [], DRAG_ACTION)
@@ -28,6 +29,8 @@ class GUI:
         self.overlay.drag_source_add_text_targets()
         self.overlay.connect("drag-data-received", self.on_drag_data_received)
         self.window.add(self.overlay)
+
+        self.window.connect("button-press-event", self.button_press)
 
         self.label = Gtk.Label(label="Please drop your audio file here.")
         self.overlay.add(self.label)
@@ -45,6 +48,9 @@ class GUI:
         self.overlay.show_all()
         self.window.show_all()
 
+        if len(sys.argv) > 1:
+            self.play_music(sys.argv[1])
+
     def check_position( player ):
         while 1:
             if player.p.get_position() > 0.99:
@@ -61,30 +67,33 @@ class GUI:
         return pix
 
     def on_drag_data_received(self, widget, drag_context, x,y, data,info, time):
-        self.paused = False
-        location = data.get_text().replace("%20", " ").replace("%C3%B6", "ö").strip()
+        self.play_music(data.get_text())
+
+    def play_music(widget, path):
+        widget.paused = False
+        location = path.replace("%20", " ").replace("%C3%B6", "ö").replace("%C3%A4", "ä").strip()
         mp3 = stagger.read_tag(location.replace("file://", ""))
         by_data = mp3[stagger.id3.APIC][0].data
         image = io.BytesIO(by_data)
         image_file = Image.open(image)
         image_crop_x = (image_file.size[0] / 2) - (image_file.size[1] / 2)
-        pixbuf = self.image2pixbuf(image_file.crop( (image_crop_x, 0, image_file.size[1] + image_crop_x, image_file.size[1])).resize( (500, 500)))
-        self.image.set_from_pixbuf(pixbuf)
+        pixbuf = widget.image2pixbuf(image_file.crop( (image_crop_x, 0, image_file.size[1] + image_crop_x, image_file.size[1])).resize( (500, 500)))
+        widget.image.set_from_pixbuf(pixbuf)
 
 
-        self.window.set_title("SoundBox - " + mp3.title + " by " + mp3.artist)
-        if self.p is None:
-            self.p = vlc.MediaPlayer(location)
-            self.overlay.remove(self.label)
-            self.overlay.add_overlay(self.image)
-            self.overlay.add_overlay(self.button)
-            self.overlay.show_all()
+        widget.window.set_title("SoundBox - " + mp3.title + " by " + mp3.artist)
+        if widget.p is None:
+            widget.p = vlc.MediaPlayer(location)
+            widget.overlay.remove(widget.label)
+            widget.overlay.add_overlay(widget.image)
+            widget.overlay.add_overlay(widget.button)
+            widget.overlay.show_all()
         else:
             media = vlc.Media(location)
-            self.p.set_media(media)
-        self.p.play()
-        self.button.set_image(Gtk.Image(stock=Gtk.STOCK_MEDIA_PAUSE))
-        _thread.start_new_thread( self.check_position, ( ))
+            widget.p.set_media(media)
+        widget.p.play()
+        widget.button.set_image(Gtk.Image(stock=Gtk.STOCK_MEDIA_PAUSE))
+        _thread.start_new_thread( widget.check_position, ( ))
 
     def play_pause(self, widget):
         if self.paused == False:
@@ -95,6 +104,12 @@ class GUI:
             self.button.set_image(Gtk.Image(stock=Gtk.STOCK_MEDIA_PAUSE))
             self.p.play()
             self.paused = False
+
+    def button_press(widget, event, data):
+        if (data.button == 1):
+            event.begin_move_drag (data.button, data.x_root, data.y_root, data.time)
+            return True
+        return False
 
 def main():
     app = GUI()
