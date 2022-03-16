@@ -23,6 +23,7 @@ class GUI:
         self.window.set_resizable(False)
         self.window.set_decorated(False)
         self.window.connect("button-press-event", self.button_press)
+        self.window.connect("key-press-event", self.key_press)
 
         self.overlay = Gtk.Overlay()
         self.overlay.drag_dest_set(Gtk.DestDefaults.ALL, [], DRAG_ACTION)
@@ -40,6 +41,7 @@ class GUI:
         self.button.connect("clicked", self.play_pause)
         self.button.set_valign(Gtk.Align.CENTER)
         self.button.set_halign(Gtk.Align.CENTER)
+        self.button.set_focus_on_click(False)
 
         self.image = Gtk.Image()
 
@@ -110,6 +112,16 @@ class GUI:
             event.begin_move_drag (data.button, data.x_root, data.y_root, data.time)
             return True
         return False
+
+    def key_press(widget, event, data):
+        skip = 0.01
+        if widget.p != None:
+            if data.keyval == 0x020 or data.keyval == 0x06b:
+                widget.play_pause(data)
+            elif data.keyval == 0x06c:
+                widget.p.set_position(widget.p.get_position() + skip)
+            elif data.keyval == 0x06a:
+                widget.p.set_position(widget.p.get_position() - skip)
 
 def main():
     app = GUI()
