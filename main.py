@@ -116,7 +116,9 @@ class GUI:
     def key_press(widget, event, data):
         skip = 0.01
         if widget.p != None:
-            if data.keyval == 0x06b:
+            if data.keyval == 0xFFE9 or data.keyval == 0xFFE3:
+                pass
+            elif data.keyval == 0x06b:
                 widget.play_pause(data)
             elif data.keyval == 0x06c:
                 widget.p.set_position(widget.p.get_position() + skip)
