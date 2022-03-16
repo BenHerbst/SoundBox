@@ -20,6 +20,7 @@ class GUI:
         self.window.set_keep_above(True)
         self.window.connect("destroy", Gtk.main_quit)
         self.window.set_title("SoundBox")
+        self.window.set_resizable(False)
 
         self.overlay = Gtk.Overlay()
         self.overlay.drag_dest_set(Gtk.DestDefaults.ALL, [], DRAG_ACTION)
@@ -66,7 +67,8 @@ class GUI:
         by_data = mp3[stagger.id3.APIC][0].data
         image = io.BytesIO(by_data)
         image_file = Image.open(image)
-        pixbuf = self.image2pixbuf(image_file)
+        image_crop_x = (image_file.size[0] / 2) - (image_file.size[1] / 2)
+        pixbuf = self.image2pixbuf(image_file.crop( (image_crop_x, 0, image_file.size[1] + image_crop_x, image_file.size[1])).resize( (500, 500)))
         self.image.set_from_pixbuf(pixbuf)
 
 
