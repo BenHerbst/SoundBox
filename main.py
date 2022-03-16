@@ -120,7 +120,7 @@ class GUI:
                 widget.play_pause(data)
             elif data.keyval == 0x06c:
                 widget.p.set_position(widget.p.get_position() + skip)
-            elif data.keyval == 0x06a:
+            elif data.keyval == 0x06a or 0x068:
                 widget.p.set_position(widget.p.get_position() - skip)
 
 def main():
