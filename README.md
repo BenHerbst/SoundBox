@@ -1,5 +1,5 @@
 # SoundBox
-SoundBox is a full audio player. It is simple. Very lightweight: &lt; 100 Lines. Written in Python3 and Gtk.
+SoundBox is a full audio player. It is simple. Very lightweight: &lt; 150 Lines. Written in Python3 and Gtk.
 Installation:
 1. Get python3
 2. Install gtk3 for Python via pip3
