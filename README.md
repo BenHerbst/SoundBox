@@ -1,4 +1,6 @@
 # SoundBox
+
+
 SoundBox is a full audio player. It is simple. Very lightweight: &lt; 150 Lines. Written in Python3 and Gtk.
 Installation:
 1. Get python3
@@ -13,3 +15,7 @@ TODO:
 - Skip forwards and backwards via arrow keys
 - Space to pause / resume when not button selected
 - Cover image
+
+## Support me ( PayPal )
+|[Donate](https://www.paypal.com/donate/?hosted_button_id=C5X9LBEM7XZ64)|
+|---|
